@@ -272,15 +272,11 @@ SendWorkTimedAsync - Send a timed job to a worker without blocking, and optional
 send the result to a receiving closure. You may set the closure to nil if no
 further actions are required.
 */
-func (pool *WorkPool) SendWorkTimedAsync(
-	milliTimeout time.Duration,
-	jobData interface{},
-	after func(interface{}, error),
-) {
+func (pool *WorkPool) SendWorkTimedAsync(t time.Duration, data interface{}, after func(interface{}, error)) {
 	atomic.AddInt32(&pool.pendingAsyncJobs, 1)
 	go func() {
 		defer atomic.AddInt32(&pool.pendingAsyncJobs, -1)
-		result, err := pool.SendWorkTimed(milliTimeout, jobData)
+		result, err := pool.SendWorkTimed(t, data)
 		if after != nil {
 			after(result, err)
 		}
